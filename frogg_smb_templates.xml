@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-03-08T13:55:30Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+        <group>
+            <name>Templates/Modules</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template Module SMB</template>
+            <name>Template Module SMB</name>
+            <description>Check SMB share availability and rights</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+                <group>
+                    <name>Templates/Modules</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>SMB share</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Check SMB right</name>
+                    <type>EXTERNAL</type>
+                    <key>frogg_smb_check.sh[right,{HOST.CONN},{$SMBRIGHTS}]</key>
+                    <delay>30m</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;&gt;0</expression>
+                            <name>SMB right incorrect {ITEM.VALUE} on {HOST.NAME}</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Check SMB share</name>
+                    <type>EXTERNAL</type>
+                    <key>frogg_smb_check.sh[share,{HOST.CONN},{$SMBSHARES}]</key>
+                    <delay>2m</delay>
+                    <history>7d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;&gt;0</expression>
+                            <name>NFS share {ITEM.VALUE} unavailable on {HOST.NAME}</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+        </template>
+    </templates>
+</zabbix_export>
