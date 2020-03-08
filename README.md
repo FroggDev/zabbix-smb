@@ -68,16 +68,15 @@ n | should have no permission (trigger error if can read)
 r | should have read permission only (trigger error if can write)
 w | should have write permission
 
-# More about rights
-SHARENAME|USER:PASS+RIGHT
-
-if USER is not set, script try to log in the SMB share anonymously
-if RIGHT is not set, script try READ permission
+# More about rights & shortchuts
+format = SHARENAME|USER:PASS+RIGHT
+* if USER is not set, script try to log in the SMB share anonymously
+* if RIGHT is not set, script try READ permission
 
 Exemple:
-SHARE|USER:PASS is a shortcut  to SHARE|EUSER:PASS+r
-SHARE is a shortcut to SHARE|anonymous+r
-SHARE+n is a shortcut to SHARE|anonymous+n
+* SHARE|USER:PASS is a shortcut  to SHARE|EUSER:PASS+r
+* SHARE is a shortcut to SHARE|anonymous+r
+* SHARE+n is a shortcut to SHARE|anonymous+n
 
 # Template items
 ![Zabbix SMB Template](https://tool.frogg.fr/upload/github/zabbix-smb/items.png)
