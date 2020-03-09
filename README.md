@@ -78,6 +78,13 @@ Exemple:
 * SHARE is a shortcut to SHARE|anonymous+r
 * SHARE+n is a shortcut to SHARE|anonymous+n
 
+## More about shares
+Share can include sub folder, but they need to be separated by **/** and not by **\**
+
+Exemple:
+SHARE/SUBFOLDER/SUBFOLDER/EVENMORE|EUSER:PASS+r
+
+
 # Template items
 ![Zabbix SMB Template](https://tool.frogg.fr/upload/github/zabbix-smb/items.png)
 
