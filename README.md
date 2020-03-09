@@ -39,13 +39,13 @@ chmod +x frogg_smb_check.sh
 
 ### Testing the installation
 You can run the command:
-- To Test SMB shares
+- To Test SMB shares (check only the exposed share, so it test only root share folder)
 ```bash
 ./frogg_smb_check.sh share 192.168.0.1 "frogg$;hd;uhd;series;shows;musics"
 ```
-- To Test SMB rights
+- To Test SMB rights (can check for subfolder if separated with /)
 ```bash
-./frogg_smb_check.sh right 192.168.0.2 "frogg$|frogg:pass+w;frogg$+n;series+w;uhd+w;hd+w;shows+w;musics+w;temp+r;temp|user:pass+w"
+./frogg_smb_check.sh right 192.168.0.2 "frogg$|frogg:pass+w;frogg$+n;series+w;uhd+w;hd+w;shows+w;musics+w;temp+r;temp/subfolder|user:pass+w"
 ```
 ## Template
 
