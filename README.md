@@ -82,8 +82,8 @@ Exemple:
 Share can include sub folder, but they need to be separated by **/** and not by **\\**
 
 Exemple:
-SHARE/SUBFOLDER/SUBFOLDER/EVENMORE|EUSER:PASS+r
-
+ * SHARE/SUBFOLDER/SUBFOLDER/EVENMORE|USER:PASS+r
+ * SHARE/SUBFOLDER/EVENMORE+w
 
 # Template items
 ![Zabbix SMB Template](https://tool.frogg.fr/upload/github/zabbix-smb/items.png)
