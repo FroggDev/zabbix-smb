@@ -79,6 +79,9 @@ Exemple:
 * SHARE+n is a shortcut to SHARE|anonymous+n
 
 ## More about shares
+* For the share test
+It check only if main folder are shared so you can put subfolder there
+* For the share rights
 Share can include sub folder, but they need to be separated by **/** and not by **\\**
 
 Exemple:
