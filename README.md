@@ -68,7 +68,7 @@ n | should have no permission (trigger error if can read)
 r | should have read permission only (trigger error if can write)
 w | should have write permission
 
-# More about rights & shortchuts
+## More about rights & shortchuts
 format = SHARENAME|USER:PASS+RIGHT
 * if USER is not set, script try to log in the SMB share anonymously
 * if RIGHT is not set, script try READ permission
