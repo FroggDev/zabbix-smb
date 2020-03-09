@@ -79,7 +79,7 @@ Exemple:
 * SHARE+n is a shortcut to SHARE|anonymous+n
 
 ## More about shares
-Share can include sub folder, but they need to be separated by **/** and not by **\**
+Share can include sub folder, but they need to be separated by **/** and not by **\\**
 
 Exemple:
 SHARE/SUBFOLDER/SUBFOLDER/EVENMORE|EUSER:PASS+r
