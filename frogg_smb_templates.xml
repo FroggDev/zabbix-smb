@@ -39,7 +39,7 @@
                     <value_type>TEXT</value_type>
                     <triggers>
                         <trigger>
-                            <expression>{last()}&lt;&gt;0</expression>
+                            <expression>{strlen()}&gt;0</expression>
                             <name>SMB right incorrect {ITEM.VALUE} on {HOST.NAME}</name>
                             <priority>WARNING</priority>
                         </trigger>
@@ -55,7 +55,7 @@
                     <value_type>TEXT</value_type>
                     <triggers>
                         <trigger>
-                            <expression>{last()}&lt;&gt;0</expression>
+                            <expression>{strlen()}&gt;0</expression>
                             <name>SMB share {ITEM.VALUE} unavailable on {HOST.NAME}</name>
                             <priority>AVERAGE</priority>
                         </trigger>

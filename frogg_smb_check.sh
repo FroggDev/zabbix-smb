@@ -70,8 +70,8 @@ do
   fi
 done
 
-# Return 0 if all is ok else the string to display
-[[ $RESULT = "" ]] && echo "0" || echo $RESULT
+# Return nothing if all is ok, else the lis of share with trouble
+echo $RESULT
 }
 
 # ---
@@ -125,8 +125,8 @@ do
 
 done
 
-# Return 0 if all is ok else the string to display
-[[ $RESULT = "" ]] && echo "0" || echo $RESULT
+# Return nothing if all is ok, else the lis of share with trouble
+echo $RESULT
 }
 
 ##############
