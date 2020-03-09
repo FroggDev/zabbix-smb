@@ -22,7 +22,7 @@
 SMBACTION=$1
 # SMB Server IP
 SMBSERVER=$2
-# SMB formated share list 
+# SMB formated share list
 # ex: action=share share1;share2;share3
 # ex: action=right share1|user1:pass1+r;share1|user2:pass2+w
 SMBSHARES=$3
@@ -62,8 +62,10 @@ SMBSHARES=$(echo $2 | tr "$SEP" "\n")
 # For each SMB share test if exist in server SMB share list
 for SHARE in ${SMBSHARES[@]}
 do
+  #set share as lower case
+  SHARE=${SHARE,,}
   # Check if SMB share does not exist in SMB server shares
-  if [[ ! " ${SMBSHARESFOUND[@]} " =~ " ${SHARE} " ]]; then
+  if [[ ! " ${SMBSHARESFOUND} " =~ " ${SHARE} " ]]; then
     RESULT="${RESULT}[${SHARE}]"
   fi
 done
@@ -87,8 +89,12 @@ do
   #DATAS = share|user:pass
   DATAS=$(getElementAt "$SHAREINFO" "$RSEP" 1)
   RIGHT=$(getElementAt "$SHAREINFO" "$RSEP" 2)
+  #set right as lower case
+  RIGHT=${RIGHT,,}
 
   SHARE=$(getElementAt "$DATAS" "$SSEP" 1)
+  #set share as lower case
+  SHARE=${SHARE,,}
   #USERS = user:pass
   USERS=$(getElementAt "$DATAS" "$SSEP" 2)
 
@@ -98,19 +104,22 @@ do
   #Set USER=anonymous if no user set
   [ "$USER" = "" ] && USER="anonymous"
 
-  # Debug
-  #echo "Trying rights ${RIGHT} on ${1}/${SHARE} for $USER $PASS"
-
   # User as string for the result
   USERSTR=$(getUserStr "$USER" "$PASS")
 
+
+  # Debug
+  #echo "Trying rights ${RIGHT} on ${1}/${SHARE} for $USER $PASS"
+
   case ${RIGHT} in
     # should be able to write
-    ("w") [ $(canWriteSmb "${1}/${SHARE}" $USER $PASS) -eq 0 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}${RIGHT}]";;
+    ("w") [ $(canWriteSmb "${1}" "${SHARE}" "$USER" "$PASS") -eq 0 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}${RIGHT}]";;
+    # should not be able to read
+    ("n") [ $(canReadSmb "${1}" "${SHARE}" "$USER" "$PASS") -eq 1 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}${RIGHT}]";;
     # by default check read but should not be able to write
     (*)
-      [ $(canReadSmb "${1}/${SHARE}" $USER $PASS) -eq 0 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}r]";
-      [ $(canWriteSmb "${1}/${SHARE}" $USER $PASS) -eq 1 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}w]";
+      [ $(canReadSmb "${1}" "${SHARE}" "$USER" "$PASS") -eq 0 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}r]";
+      [ $(canWriteSmb "${1}" "${SHARE}" "$USER" "$PASS") -eq 1 ] && RESULT="${RESULT}[${SHARE}${USERSTR}${RSEP}w]";
     ;;
   esac
 
@@ -135,31 +144,44 @@ echo $(
   awk -F'|' '$1 == "Disk" {print $2}' |
   while IFS= read -r SHARE
   do
-          echo "${SHARE}"
+    #set share as lower case
+    echo "${SHARE,,}"
   done
 )
 }
 
 # ---
 # Check if user can read in the SMB share
-# @param serverIP/share
+# @param serverIP
+# @param share
 # @param user
 # @param password
 # @return true if can read
 function canReadSmb()
 {
-smbclient "//$1" "$3" -U "$2" -c "dir" >/dev/null 2>&1 && echo 1 || echo 0
+# All before 1st /
+SHARE="${2%%/*}"
+# All after 1st /
+FOLDER="${2#*/}/"
+
+smbclient "//$1/$SHARE" "$4" -U "$3" -c "cd $FOLDER;dir" >/dev/null 2>&1 && echo 1 || echo 0
 }
 
 # ---
 # Check if user can write in the SMB share
-# @param serverIP/share
+# @param serverIP
+# @param share
 # @param user
 # @param password
 # @return true if can write
 function canWriteSmb()
 {
-smbclient "//$1" "$3" -U "$2" -c "md -tmpfolderfroggtest-;rd -tmpfolderfroggtest-" >/dev/null 2>&1 && echo 1 || echo 0
+# All before 1st /
+SHARE="${2%%/*}"
+# All after 1st /
+FOLDER="${2#*/}/"
+
+smbclient "//$1/$SHARE" "$4" -U "$3" -c "cd $FOLDER;md -tmpfolderfroggtest-;rd -tmpfolderfroggtest-" >/dev/null 2>&1 && echo 1 || echo 0
 }
 
 # ---
