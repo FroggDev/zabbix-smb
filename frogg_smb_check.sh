@@ -23,15 +23,15 @@ SMBACTION=$1
 # SMB Server IP
 SMBSERVER=$2
 # SMB formated share list
-# ex: action=share share1;share2;share3
-# ex: action=right share1|user1:pass1+r;share1|user2:pass2+w
+# ex: action=share share1,share2,share3
+# ex: action=right share1|user1:pass1+r,share1|user2:pass2+w
 SMBSHARES=$3
 
 ##########
 # CONSTS #
 ##########
 #Element separator
-declare -r SEP=";"
+declare -r SEP=","
 #Share separator
 declare -r SSEP="|"
 #User separator
@@ -42,6 +42,15 @@ declare -r RSEP="+"
 #########
 # FUNCS #
 #########
+
+# ---
+# Check if can check SMB rights
+# @param serverIP
+# @return 0/1
+function canCheckSmbShares()
+{
+[[ $(smbclient -L $1 -g -N -U zabbix) == "session setup failed: NT_STATUS_ACCESS_DENIED" ]]  && return 1 || return 0
+}
 
 # ---
 # Get the SMB shares of a server
@@ -56,19 +65,18 @@ RESULT=""
 # get all SMB share for the server
 SMBSHARESFOUND=$(getSmbShares "$1")
 
-# get all SMB share sent by user separated by ;
+# get all SMB share sent by user separated by $SEP
 SMBSHARES=$(echo $2 | tr "$SEP" "\n")
 
 # For each SMB share test if exist in server SMB share list
-for SHARE in ${SMBSHARES[@]}
-do
+while IFS= read -r SHARE; do
   #set share as lower case
-  SHARE=${SHARE,,}
+  SHARE="[${SHARE,,}]"
   # Check if SMB share does not exist in SMB server shares
   if [[ ! " ${SMBSHARESFOUND} " =~ " ${SHARE} " ]]; then
-    RESULT="${RESULT}[${SHARE}]"
+    RESULT="${RESULT}${SHARE}"
   fi
-done
+done <<< ${SMBSHARES}
 
 # Return nothing if all is ok, else the lis of share with trouble
 echo $RESULT
@@ -83,9 +91,12 @@ function checkSmbRights()
 {
 RESULT=""
 
-SHAREINFOS=$(echo $2 | tr "$SEP" "\n")
-for SHAREINFO in $SHAREINFOS
-do
+# get all SMB share sent by user separated by $SEP
+SMBSHARES=$(echo $2 | tr "$SEP" "\n")
+
+# For each SMB share test if exist in server SMB share list
+while IFS= read -r SHAREINFO; do
+
   #DATAS = share|user:pass
   DATAS=$(getElementAt "$SHAREINFO" "$RSEP" 1)
   RIGHT=$(getElementAt "$SHAREINFO" "$RSEP" 2)
@@ -107,7 +118,6 @@ do
   # User as string for the result
   USERSTR=$(getUserStr "$USER" "$PASS")
 
-
   # Debug
   #echo "Trying rights ${RIGHT} on ${1}/${SHARE} for $USER $PASS"
 
@@ -123,7 +133,7 @@ do
     ;;
   esac
 
-done
+done <<< $SMBSHARES
 
 # Return nothing if all is ok, else the lis of share with trouble
 echo $RESULT
@@ -140,12 +150,12 @@ echo $RESULT
 function getSmbShares()
 {
 echo $(
-  smbclient -L $1 -g -N 2> /dev/null |
+  smbclient -L $1 -g -N -U zabbix 2> /dev/null |
   awk -F'|' '$1 == "Disk" {print $2}' |
   while IFS= read -r SHARE
   do
     #set share as lower case
-    echo "${SHARE,,}"
+    echo "[${SHARE,,}]"
   done
 )
 }
@@ -196,12 +206,11 @@ RESULT=""
 # spliting the string
 ELEMENTS=$(echo $1 | tr "$2" "\n")
 i=1
-for ELEMENT in $ELEMENTS
-do
+while IFS= read -r ELEMENT; do
   # if position match return the string as result
   [ $i -eq $3 ] && RESULT=$ELEMENT
   ((i++))
-done
+done <<< $ELEMENTS
 echo $RESULT
 }
 
@@ -226,7 +235,13 @@ echo $RESULT
 
 case ${SMBACTION} in
   # command check share
-  ("share")echo $(checkSmbShares "$SMBSERVER" "$SMBSHARES");;
+  ("share")
+  if canCheckSmbShares "$SMBSERVER";then
+    echo $(checkSmbShares "$SMBSERVER" "$SMBSHARES")
+  else
+    echo "[ SMB rights error : NT_STATUS_ACCESS_DENIED ]"
+  fi
+  ;;
   # command check right
   ("right")echo $(checkSmbRights "$SMBSERVER" "$SMBSHARES");;
   # command not set or invalid

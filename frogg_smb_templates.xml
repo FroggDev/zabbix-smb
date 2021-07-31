@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>4.4</version>
-    <date>2020-03-08T13:55:30Z</date>
+    <version>5.2</version>
+    <date>2021-07-31T19:55:30Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -12,8 +12,8 @@
     </groups>
     <templates>
         <template>
-            <template>Template Module SMB</template>
-            <name>Template Module SMB</name>
+            <template>SMB Share</template>
+            <name>Template Module SMB Share</name>
             <description>Check SMB share availability and rights</description>
             <groups>
                 <group>
@@ -25,7 +25,7 @@
             </groups>
             <applications>
                 <application>
-                    <name>SMB share</name>
+                    <name>SMB</name>
                 </application>
             </applications>
             <items>
@@ -37,6 +37,11 @@
                     <history>7d</history>
                     <trends>0</trends>
                     <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>SMB</name>
+                        </application>
+                    </applications>
                     <triggers>
                         <trigger>
                             <expression>{strlen()}&gt;0</expression>
@@ -53,6 +58,11 @@
                     <history>7d</history>
                     <trends>0</trends>
                     <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>SMB</name>
+                        </application>
+                    </applications>
                     <triggers>
                         <trigger>
                             <expression>{strlen()}&gt;0</expression>
@@ -62,6 +72,18 @@
                     </triggers>
                 </item>
             </items>
+            <macros>
+                <macro>
+                    <macro>{$SMBSHARES}</macro>
+                    <value>smbshare1,smbshare2</value>
+                    <description>List of shares separated by ,</description>
+                </macro>
+                <macro>
+                    <macro>{$SMBRIGHTS}</macro>
+                    <value>share1$+r,share2+w,share3|user:pass+r</value>
+                    <description>List of shares with rights separated by , Syntax is SHARE/SUBFOLDER/SUBFOLDER/EVENMORE|USER:PASS{RIGHTS_CODE}</description>
+                </macro>
+            </macros>
         </template>
     </templates>
 </zabbix_export>

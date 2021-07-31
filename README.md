@@ -1,6 +1,6 @@
-### Zabbix Template Module SMB version 1.0.1
+### Zabbix Template Module SMB version 1.0.3
 
-Tested on Zabbix 4.4
+Tested on Zabbix 4.0 to 5.2
 
 # Introduction
 Template for zabbix to check smb share availability using external script.
@@ -8,8 +8,13 @@ It can check:
 * If SMB shares are available
 * SMB shares rights
 
+The script will be launched by Zabbix server, testing if client SMB share is available using a script.
+That mean Zabbix network must be able to see SMB sharing of the client on the network.
+* All the files are installed on Zabbix server, none is required on the client.
+* Your network must allow zabbix server to communicate with SMB share of the client
+
 # Requirement
-The script use the commands **smbclient** so it requires the linux package **smbclient**
+The script use the commands **smbclient** so it requires the linux package **smbclient** on your zabbix server
 
 To install it you can use the package manager of your distribution
 
@@ -41,11 +46,11 @@ chmod +x frogg_smb_check.sh
 You can run the command:
 - To Test SMB shares (check only the exposed share, so it test only root share folder)
 ```bash
-./frogg_smb_check.sh share 192.168.0.1 "frogg$;hd;uhd;series;shows;musics"
+./frogg_smb_check.sh share 192.168.0.1 "frogg$,hd,uhd,series,shows,musics"
 ```
 - To Test SMB rights (can check for subfolder if separated with /)
 ```bash
-./frogg_smb_check.sh right 192.168.0.2 "frogg$|frogg:pass+w;frogg$+n;series+w;uhd+w;hd+w;shows+w;musics+w;temp+r;temp/subfolder|user:pass+w"
+./frogg_smb_check.sh right 192.168.0.2 "frogg$|frogg:pass+w,frogg$+n,series+w,uhd+w,hd+w,shows+w,musics+w,temp+r,temp/subfolder|user:pass+w"
 ```
 ## Template
 
@@ -56,17 +61,17 @@ The template use 2 macros :
 
 MACRO | Description
 ----- | -----------
-{$SMBSHARES} | the list of NFS shares that should be available, to set multiple shares they must be separated by **;**
-{$SMBRIGHTS} | the list of NFS shares with user and rights, to set multiple shares they must be separated by **;**
+{$SMBSHARES} | the list of SMB shares that should be available, to set multiple shares they must be separated by **,**
+{$SMBRIGHTS} | the list of SMB shares with user and rights, to set multiple shares they must be separated by **,**
 
 Exemple:
-![Zabbix SMB configuration sample](https://tool.frogg.fr/upload/github/zabbix-smb/macros.png)
+![Zabbix SMB configuration sample](https://tool.frogg.fr/upload/github/zabbix-smb/macros-1.0.3.png)
 
 RIGHT | Description
 ----- | -----------
-n | should have no permission (trigger error if can read)
-r | should have read permission only (trigger error if can write)
-w | should have write permission
++n | should have no permission (trigger error if can read)
++r | should have read permission only (trigger error if can write)
++w | should have write permission
 
 ## More about rights & shortchuts
 format = SHARENAME|USER:PASS+RIGHT
@@ -89,10 +94,10 @@ Exemple:
  * SHARE/SUBFOLDER/EVENMORE+w
 
 # Template items
-![Zabbix SMB Template](https://tool.frogg.fr/upload/github/zabbix-smb/items.png)
+![Zabbix SMB Template](https://tool.frogg.fr/upload/github/zabbix-smb/items-1.0.3.png)
 
 # Template triggers
-![Zabbix SMB Template triggers](https://tool.frogg.fr/upload/github/zabbix-smb/triggers.png)
+![Zabbix SMB Template triggers](https://tool.frogg.fr/upload/github/zabbix-smb/triggers-1.0.3.png)
 
 # Debuging
 
