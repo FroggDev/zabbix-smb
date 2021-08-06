@@ -52,6 +52,9 @@ You can run the command:
 ```bash
 ./frogg_smb_check.sh right 192.168.0.2 "frogg$|frogg:pass+w,frogg$+n,series+w,uhd+w,hd+w,shows+w,musics+w,temp+r,temp/subfolder|user:pass+w"
 ```
+
+*The result should be empty, that mean all worked well, else you should see an error, or the list of shares not found by the script, or the not matching rights*
+
 ## Template
 
 Then you need to import the **frogg_smb_check.xml** template configuration file in the zabbix web interface in **Template** tab using the import button
