@@ -55,6 +55,11 @@ You can run the command:
 
 **The result should be empty, that mean all worked well, else you should see an error, or the list of shares not found by the script, or the not matching rights**
 
+If trouble you can try the command used to check server share :
+```bash
+smbclient -L {server_ip} -g -N -U zabbix
+```
+
 ## Template
 
 Then you need to import the **frogg_smb_check.xml** template configuration file in the zabbix web interface in **Template** tab using the import button
